@@ -26,5 +26,23 @@ ALTER TABLE IF EXISTS homebase.bank_marketing
   ADD COLUMN IF NOT EXISTS  created_at timestamp without time zone DEFAULT now(),
   ADD COLUMN IF NOT EXISTS  updated_at timestamp without time zone DEFAULT now();
 
+CREATE OR REPLACE FUNCTION public.update_timestamp()
+    RETURNS trigger
+    LANGUAGE plpgsql
+AS
+$function$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+RETURN NEW;
+END;
+$function$
+;
+create trigger update_timestamp
+    before update
+    on homebase.bank_marketing
+    for each row
+execute procedure update_timestamp();
+
+
 ALTER TABLE IF EXISTS homebase.bank_marketing
     OWNER to linhtb;
